@@ -72,6 +72,12 @@ class ThreadLoop(object):
             self._ready.set()
 
         if not self._io_loop:
+            _io_loop = ioloop.IOLoop.current(instance=False)
+            if _io_loop:
+                self._io_loop = _io_loop
+                if self._io_loop.is_running():
+                    mark_as_ready()
+                    return
             self._io_loop = ioloop.IOLoop()
 
         self._io_loop.add_callback(mark_as_ready)
@@ -92,7 +98,7 @@ class ThreadLoop(object):
 
     def stop(self):
         """Stop IOLoop & close daemonized thread."""
-        self._io_loop.stop()
+        self._io_loop.add_callback(self._io_loop.stop)
         self._thread.join()
 
     def submit(self, fn, *args, **kwargs):
