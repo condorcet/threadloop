@@ -75,9 +75,8 @@ class ThreadLoop(object):
             _io_loop = ioloop.IOLoop.current(instance=False)
             if _io_loop:
                 self._io_loop = _io_loop
-                if self._io_loop.is_running():
-                    mark_as_ready()
-                    return
+                mark_as_ready()
+                return
             self._io_loop = ioloop.IOLoop()
 
         self._io_loop.add_callback(mark_as_ready)
